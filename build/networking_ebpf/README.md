@@ -8,13 +8,28 @@ A high-level overview of the architecture is as follows:
 
 ## Running
 
-### Bare Metal
+### Running Natively
 
 If you want to run natively (on bare metal or in a VM), do the following:
 
 ```
-$ sudo ./vagrant/provision.sh
-$ sudo ./scripts/host_install.sh
+REPO=<root to your ipdk repository>
+$ cd $REPO/build
+$ sudo ./ipdk install
+$ export PATH=`pwd`:$PATH
+$ sudo ./ipdk install ebpf-ubuntu2004
+$ sudo ./networking_ebpf/vagrant/provision.sh
+$ sudo ./networking_ebpf/scripts/host_install.sh
+```
+
+This should put p4c and other executables into your path. You should then be
+able to compile the example program simple_l3.p4 as follows. Assuming you want
+the results placed in the directory RESULTS,
+
+```
+RESULTS=<where you want compiler products placed>
+cd $REPO/build/networking_ebpf/ipdk-ebpf/p4c/backend/ebpf
+make -f ./runtime/kernel.mk BPFOBJ=$RESULTS/out.o P4FILE=$REPO/build/networking_ebpf/examples/simple_l3.p4 ARGS="-DPSA_PORT_RECIRCULATE=2" P4ARGS="--Wdisable=unused -I/usr/local/share/p4c/p4include/dpdk" psa
 ```
 
 ### Vagrant
